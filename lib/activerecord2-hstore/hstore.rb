@@ -24,7 +24,17 @@ module Hstore
       # hstore string.
       def create_getter_and_setter(column)
         define_method column.to_sym do
-          read_attribute(column.to_sym).to_s.from_hstore
+          hash = read_attribute(column.to_sym).to_s.from_hstore
+          hash.instance_variable_set(:@active_record_object,self)
+          hash.instance_variable_set(:@active_record_column,column)
+          # Extend hash with callback to detect key changes, and save whole hstore hash.
+          class << hash
+            def []=(key, value)
+              super(key,value)
+              @active_record_object.write_attribute(@active_record_column.to_sym, self.to_hstore)
+            end
+          end
+          hash
         end
 
         define_method "#{column}=".to_sym do |value|
