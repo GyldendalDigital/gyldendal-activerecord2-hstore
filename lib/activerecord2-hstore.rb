@@ -1,6 +1,5 @@
 require "activerecord2-hstore/version"
 require "activerecord2-hstore/string"
-require "activerecord2-hstore/hash"
 require "activerecord2-hstore/hstore"
 require "activerecord2-hstore/active_record"
 

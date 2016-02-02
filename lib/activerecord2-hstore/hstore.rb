@@ -31,15 +31,14 @@ module Hstore
           class << hash
             def []=(key, value)
               super(key,value)
-              @active_record_object.write_attribute(@active_record_column.to_sym, self.to_hstore)
+              @active_record_object.write_attribute(@active_record_column.to_sym, self)
             end
           end
           hash
         end
 
         define_method "#{column}=".to_sym do |value|
-          val = {}.to_hstore if value.nil?
-          val ||= value.is_a?(String) ? value : value.to_hstore
+          val = value || {}
           write_attribute(column.to_sym, val)
         end
       end
