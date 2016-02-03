@@ -24,7 +24,13 @@ module Hstore
       # hstore string.
       def create_getter_and_setter(column)
         define_method column.to_sym do
-          hash = read_attribute(column.to_sym).to_s.from_hstore
+          hash = read_attribute(column.to_sym)
+          hash = case
+                 when hash.nil? then {}
+                 when hash.kind_of?(Hash) then hash
+                 when hash.kind_of?(String) then hash.from_hstore
+                 else raise("Unknown hash type for create_getter_and_setter in ActiveRecord::Hstore")
+                 end
           hash.instance_variable_set(:@active_record_object,self)
           hash.instance_variable_set(:@active_record_column,column)
           # Extend hash with callback to detect key changes, and save whole hstore hash.
